@@ -1,16 +1,20 @@
 package text_analysis.exam;
 
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 public class JFrame extends javax.swing.JFrame {
@@ -39,13 +43,14 @@ public class JFrame extends javax.swing.JFrame {
         });
     }
     ArrayList<String> text;
+    ArrayList<String> changed_text;
     ArrayList<String> ru_stop_words;
     ArrayList<String> eng_stop_words;
 
     DefaultTableModel freq_table;
     FileWorker fileWorker;
     TextWorker textWorker;
-    //AnalysisWork analyst;
+    AnalysisWorker analyst;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -117,6 +122,12 @@ public class JFrame extends javax.swing.JFrame {
         uploadWordsPanel = new javax.swing.JPanel();
         stopwordsMessageLabel = new javax.swing.JLabel();
         okUploadStopWordsButton = new javax.swing.JButton();
+        loadingFrame = new javax.swing.JFrame();
+        jPanel1 = new javax.swing.JPanel();
+        loadingLabel1 = new javax.swing.JLabel();
+        loadingLabel2 = new javax.swing.JLabel();
+        gifLabel = new javax.swing.JLabel();
+        group = new javax.swing.ButtonGroup();
         startFrame = new javax.swing.JPanel();
         startButton = new javax.swing.JButton();
         welcomeLabel = new javax.swing.JLabel();
@@ -735,6 +746,59 @@ public class JFrame extends javax.swing.JFrame {
             .addComponent(uploadWordsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        loadingFrame.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+
+        loadingLabel1.setFont(new java.awt.Font("Algerian", 1, 15)); // NOI18N
+        loadingLabel1.setForeground(new java.awt.Color(204, 0, 0));
+        loadingLabel1.setText("The text is being analyzed");
+
+        loadingLabel2.setFont(new java.awt.Font("Algerian", 1, 14)); // NOI18N
+        loadingLabel2.setForeground(new java.awt.Color(204, 0, 0));
+        loadingLabel2.setText("Look into the darkness and it will start looking at you");
+
+        gifLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(loadingLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(106, 106, 106)
+                .addComponent(loadingLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(81, 81, 81)
+                .addComponent(gifLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(loadingLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(loadingLabel2)
+                .addGap(24, 24, 24)
+                .addComponent(gifLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout loadingFrameLayout = new javax.swing.GroupLayout(loadingFrame.getContentPane());
+        loadingFrame.getContentPane().setLayout(loadingFrameLayout);
+        loadingFrameLayout.setHorizontalGroup(
+            loadingFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        loadingFrameLayout.setVerticalGroup(
+            loadingFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         startFrame.setBackground(new java.awt.Color(0, 0, 0));
@@ -864,7 +928,24 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_importButtonActionPerformed
 
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
+        analyst = new AnalysisWorker();
+        textWorker = new TextWorker();
+        try {
+            changed_text = new ArrayList<>();
+            changed_text = textWorker.changeText(text, ru_stop_words, eng_stop_words, useRusButton,
+                    useEngButton, useRuStopWordsButton, useEngStopWordsButton, singleRegisterCB, removeNumbersCB, ruStopWordsList, engStopWordsList);
+            if (!changed_text.isEmpty()) {
+                loadingProcess();
+                timer.setRepeats(false);
+                timer.start();
 
+                analyst.analyzeText(text, changed_text, FreqTable, numberWordsField, numberDelWordsField, popularWordField, unpopularWordField);
+            } else {
+                JOptionPane.showMessageDialog(null, "Вы удалили все слова!", "Oшибка", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Ошибка при анализе текста!", "Oшибка", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_analyzeButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
@@ -906,7 +987,9 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_useRusButtonActionPerformed
 
     private void deleteSelectionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSelectionsButtonActionPerformed
-//        group.clearSelection();
+        group.add(useEngButton);
+        group.add(useRusButton);
+        group.clearSelection();
     }//GEN-LAST:event_deleteSelectionsButtonActionPerformed
 
     private void okSaveReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okSaveReportButtonActionPerformed
@@ -940,6 +1023,20 @@ public class JFrame extends javax.swing.JFrame {
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
     }
 
+    Timer timer = new Timer(3000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            loadingFrame.dispose();
+        }
+    });
+
+    public void loadingProcess() {
+        loadingFrame.setVisible(true);
+        loadingFrame.setBounds(300, 300, 350, 330);
+        ImageIcon gif = new ImageIcon(System.getProperty("user.dir") + "/resources/loading.gif");
+        gifLabel.setIcon(gif);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -958,6 +1055,8 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem exitButton;
     private javax.swing.JButton exitFromGuideButton;
     private javax.swing.JMenuItem exportButton;
+    private javax.swing.JLabel gifLabel;
+    private javax.swing.ButtonGroup group;
     private javax.swing.JDialog guide;
     private javax.swing.JButton guideButton;
     private javax.swing.JLabel guideLabel1;
@@ -974,7 +1073,11 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JPanel guidePanel;
     private javax.swing.JMenuItem importButton;
     private javax.swing.JMenuItem importStopWords;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JMenu loadStopWord;
+    private javax.swing.JFrame loadingFrame;
+    private javax.swing.JLabel loadingLabel1;
+    private javax.swing.JLabel loadingLabel2;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu moreSettingsMenu;

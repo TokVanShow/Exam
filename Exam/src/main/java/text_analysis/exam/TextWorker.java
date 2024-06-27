@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -20,21 +21,25 @@ public class TextWorker {
     public ArrayList<String> changeText(ArrayList<String> text, ArrayList<String> ruStopWords, ArrayList<String> engStopWords,
             JRadioButtonMenuItem useRusButton, JRadioButtonMenuItem useEngButton,
             JCheckBoxMenuItem useRuStopWordsButton, JCheckBoxMenuItem useEngStopWordsButton,
+            JCheckBox toLowerCaseButton, JCheckBox deleteSignsButton,
             JList<String> ruStopWordsList, JList<String> engStopWordsList) {
-
-        text = toLowerCase(text);
-        text = deleteSigns(text);
-
+        
+        if (toLowerCaseButton.isSelected()) {
+            text = toLowerCase(text);
+        }
+        if (deleteSignsButton.isSelected()) {
+            text = deleteSigns(text);
+        }
         if (useRusButton.isSelected()) {
             text = deleteNotRus(text);
         }
         if (useEngButton.isSelected()) {
             text = deleteNotEng(text);
         }
-        if (useRuStopWordsButton.getState()) {
+        if (useRuStopWordsButton.isSelected()) {
             useStopWords(text, ruStopWords, ruStopWordsList);
         }
-        if (useEngStopWordsButton.getState()) {
+        if (useEngStopWordsButton.isSelected()) {
             useStopWords(text, engStopWords, engStopWordsList);
         }
 
