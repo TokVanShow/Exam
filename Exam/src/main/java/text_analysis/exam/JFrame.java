@@ -1,29 +1,51 @@
 package text_analysis.exam;
 
 import java.awt.Window;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import java.io.File;
 import java.util.ArrayList;
-import javax.swing.JComponent;
 
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-
 public class JFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form JFrame
-     */
     public JFrame() {
         initComponents();
-    }
+        textWorker = new TextWorker();
 
+        allCB.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
+                singleRegisterCB.setSelected(selected);
+                removeNumbersCB.setSelected(selected);
+                singleRegisterCB.setEnabled(!selected);
+                removeNumbersCB.setEnabled(!selected);
+            }
+        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        MainJFrame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        MainJFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+    ArrayList<String> text;
     ArrayList<String> ru_stop_words;
     ArrayList<String> eng_stop_words;
-    
+
     DefaultTableModel freq_table;
     FileWorker fileWorker;
+    TextWorker textWorker;
+    //AnalysisWork analyst;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -57,7 +79,16 @@ public class JFrame extends javax.swing.JFrame {
         unpopularWordField = new javax.swing.JLabel();
         numberWordsField = new javax.swing.JLabel();
         guideButton = new javax.swing.JButton();
+        singleRegisterCB = new javax.swing.JCheckBox();
+        removeNumbersCB = new javax.swing.JCheckBox();
+        allCB = new javax.swing.JCheckBox();
         menu = new javax.swing.JMenuBar();
+        loadStopWord = new javax.swing.JMenu();
+        importButton = new javax.swing.JMenuItem();
+        importStopWords = new javax.swing.JMenuItem();
+        analyzeButton = new javax.swing.JMenuItem();
+        exportButton = new javax.swing.JMenuItem();
+        exitButton = new javax.swing.JMenuItem();
         settingsMenu = new javax.swing.JMenu();
         useStopWords = new javax.swing.JMenu();
         useRuStopWordsButton = new javax.swing.JCheckBoxMenuItem();
@@ -68,11 +99,6 @@ public class JFrame extends javax.swing.JFrame {
         useEngButton = new javax.swing.JRadioButtonMenuItem();
         useRusButton = new javax.swing.JRadioButtonMenuItem();
         deleteSelectionsButton = new javax.swing.JMenuItem();
-        mainMenu = new javax.swing.JMenu();
-        importButton = new javax.swing.JMenuItem();
-        analyzeButton = new javax.swing.JMenuItem();
-        exportButton = new javax.swing.JMenuItem();
-        exitButton = new javax.swing.JMenuItem();
         ruStopWordsFrame = new javax.swing.JFrame();
         ruStopWordsScrollPanel = new javax.swing.JScrollPane();
         ruStopWordsList = new javax.swing.JList<>();
@@ -100,10 +126,10 @@ public class JFrame extends javax.swing.JFrame {
 
         guidePanel.setBackground(new java.awt.Color(0, 0, 0));
 
-        exitFromGuideButton.setBackground(new java.awt.Color(102, 0, 0));
+        exitFromGuideButton.setBackground(new java.awt.Color(204, 0, 0));
         exitFromGuideButton.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
         exitFromGuideButton.setText("OK");
-        exitFromGuideButton.setBorder(null);
+        exitFromGuideButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         exitFromGuideButton.setFocusPainted(false);
         exitFromGuideButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         exitFromGuideButton.setPreferredSize(new java.awt.Dimension(25, 25));
@@ -159,7 +185,7 @@ public class JFrame extends javax.swing.JFrame {
                     .addGroup(guidePanelLayout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(guideLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(guideLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                             .addComponent(guideLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(guidePanelLayout.createSequentialGroup()
                         .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -172,11 +198,15 @@ public class JFrame extends javax.swing.JFrame {
                                     .addComponent(guideLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(guidePanelLayout.createSequentialGroup()
                                 .addGap(15, 15, 15)
-                                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(guideLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(guideLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(guideLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(guideLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(guideLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE))
+                                    .addGroup(guidePanelLayout.createSequentialGroup()
+                                        .addComponent(guideLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(guidePanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
@@ -184,13 +214,8 @@ public class JFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, guidePanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, guidePanelLayout.createSequentialGroup()
-                        .addComponent(guideLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(255, 255, 255))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, guidePanelLayout.createSequentialGroup()
-                        .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addComponent(guideLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(265, 265, 265))
         );
         guidePanelLayout.setVerticalGroup(
             guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,9 +241,9 @@ public class JFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(guideLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(guideLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(guideLabel9)
+                    .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -233,12 +258,14 @@ public class JFrame extends javax.swing.JFrame {
             .addComponent(guidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        MainJFrame.setBackground(new java.awt.Color(255, 255, 255));
+        MainJFrame.setBackground(new java.awt.Color(0, 0, 0));
 
         mainPanel.setBackground(new java.awt.Color(0, 0, 0));
+        mainPanel.setForeground(new java.awt.Color(0, 0, 0));
         mainPanel.setPreferredSize(new java.awt.Dimension(450, 412));
 
-        scrollPanel.setBackground(new java.awt.Color(0, 102, 102));
+        scrollPanel.setBackground(new java.awt.Color(153, 0, 0));
+        scrollPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         scrollPanel.setForeground(new java.awt.Color(255, 51, 51));
 
         FreqTable.setBackground(new java.awt.Color(153, 0, 0));
@@ -270,7 +297,7 @@ public class JFrame extends javax.swing.JFrame {
 
         guideButton.setBackground(new java.awt.Color(204, 204, 204));
         guideButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        guideButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\help (1).png")); // NOI18N
+        guideButton.setIcon(new javax.swing.ImageIcon("C:\\МИФИ\\GitHub\\Exam\\Exam\\src\\main\\resourses\\help.png")); // NOI18N
         guideButton.setBorder(null);
         guideButton.setFocusPainted(false);
         guideButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -281,6 +308,28 @@ public class JFrame extends javax.swing.JFrame {
             }
         });
 
+        singleRegisterCB.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
+        singleRegisterCB.setForeground(new java.awt.Color(204, 0, 0));
+        singleRegisterCB.setText("to a single register");
+        singleRegisterCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                singleRegisterCBActionPerformed(evt);
+            }
+        });
+
+        removeNumbersCB.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
+        removeNumbersCB.setForeground(new java.awt.Color(204, 0, 0));
+        removeNumbersCB.setText("removing numbers and signs");
+
+        allCB.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
+        allCB.setForeground(new java.awt.Color(229, 0, 0));
+        allCB.setText("All at once");
+        allCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                allCBActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -288,15 +337,20 @@ public class JFrame extends javax.swing.JFrame {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(scrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(unpopularWordField, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-                    .addComponent(popularWordField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(guideButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(numberDelWordsField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(numberWordsField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(unpopularWordField, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+                        .addComponent(popularWordField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(numberDelWordsField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(numberWordsField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(guideButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addComponent(singleRegisterCB)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(allCB)
+                            .addGap(11, 11, 11)))
+                    .addComponent(removeNumbersCB))
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
@@ -314,28 +368,94 @@ public class JFrame extends javax.swing.JFrame {
                         .addComponent(popularWordField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(unpopularWordField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(singleRegisterCB)
+                            .addComponent(allCB))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(removeNumbersCB)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(scrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        menu.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 255), 2));
-        menu.setForeground(new java.awt.Color(153, 0, 0));
+        menu.setBackground(new java.awt.Color(0, 0, 0));
+        menu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 0, 0), new java.awt.Color(0, 0, 0), new java.awt.Color(0, 0, 0), new java.awt.Color(0, 0, 0)));
+        menu.setForeground(new java.awt.Color(0, 0, 0));
         menu.setAlignmentX(1.0F);
         menu.setPreferredSize(new java.awt.Dimension(95, 35));
 
-        settingsMenu.setBackground(new java.awt.Color(0, 102, 102));
-        settingsMenu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        loadStopWord.setBackground(new java.awt.Color(0, 0, 0));
+        loadStopWord.setBorder(null);
+        loadStopWord.setForeground(new java.awt.Color(204, 0, 0));
+        loadStopWord.setText("        File        ");
+        loadStopWord.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        loadStopWord.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        importButton.setForeground(new java.awt.Color(153, 0, 0));
+        importButton.setText("Загрузить файл");
+        importButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        importButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importButtonActionPerformed(evt);
+            }
+        });
+        loadStopWord.add(importButton);
+
+        importStopWords.setForeground(new java.awt.Color(153, 0, 0));
+        importStopWords.setText("Загрузить \"стоп-слово\"");
+        importStopWords.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        importStopWords.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importStopWordsActionPerformed(evt);
+            }
+        });
+        loadStopWord.add(importStopWords);
+
+        analyzeButton.setForeground(new java.awt.Color(153, 0, 0));
+        analyzeButton.setText("Провести анализ");
+        analyzeButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        analyzeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                analyzeButtonActionPerformed(evt);
+            }
+        });
+        loadStopWord.add(analyzeButton);
+
+        exportButton.setForeground(new java.awt.Color(153, 0, 0));
+        exportButton.setText("Сохранить отчет");
+        exportButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        exportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportButtonActionPerformed(evt);
+            }
+        });
+        loadStopWord.add(exportButton);
+
+        exitButton.setForeground(new java.awt.Color(153, 0, 0));
+        exitButton.setText("Выход");
+        exitButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButtonActionPerformed(evt);
+            }
+        });
+        loadStopWord.add(exitButton);
+
+        menu.add(loadStopWord);
+
+        settingsMenu.setBackground(new java.awt.Color(0, 0, 0));
         settingsMenu.setForeground(new java.awt.Color(204, 0, 0));
-        settingsMenu.setText("Настройки");
+        settingsMenu.setText("Settings");
+        settingsMenu.setActionCommand("    Настройки    ");
         settingsMenu.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         settingsMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         useStopWords.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        useStopWords.setForeground(new java.awt.Color(102, 102, 255));
+        useStopWords.setForeground(new java.awt.Color(153, 0, 0));
         useStopWords.setText("Использовать стоп-слова");
 
-        useRuStopWordsButton.setForeground(new java.awt.Color(102, 102, 255));
+        useRuStopWordsButton.setForeground(new java.awt.Color(153, 0, 0));
         useRuStopWordsButton.setText("Русские стоп-слова");
         useRuStopWordsButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         useRuStopWordsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -345,7 +465,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         useStopWords.add(useRuStopWordsButton);
 
-        editRuStopWordsButton.setForeground(new java.awt.Color(102, 102, 255));
+        editRuStopWordsButton.setForeground(new java.awt.Color(153, 0, 0));
         editRuStopWordsButton.setText("Редактировать русские стоп-слова");
         editRuStopWordsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -354,7 +474,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         useStopWords.add(editRuStopWordsButton);
 
-        useEngStopWordsButton.setForeground(new java.awt.Color(102, 102, 255));
+        useEngStopWordsButton.setForeground(new java.awt.Color(153, 0, 0));
         useEngStopWordsButton.setText("Английские стоп-слова");
         useEngStopWordsButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         useEngStopWordsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -364,7 +484,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         useStopWords.add(useEngStopWordsButton);
 
-        editEngStopWordsButton.setForeground(new java.awt.Color(102, 102, 255));
+        editEngStopWordsButton.setForeground(new java.awt.Color(153, 0, 0));
         editEngStopWordsButton.setText("Редактировать английские стоп-слова");
         editEngStopWordsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -376,10 +496,10 @@ public class JFrame extends javax.swing.JFrame {
         settingsMenu.add(useStopWords);
 
         moreSettingsMenu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        moreSettingsMenu.setForeground(new java.awt.Color(102, 102, 255));
+        moreSettingsMenu.setForeground(new java.awt.Color(153, 0, 0));
         moreSettingsMenu.setText("Расширенные настройки");
 
-        useEngButton.setForeground(new java.awt.Color(102, 102, 255));
+        useEngButton.setForeground(new java.awt.Color(153, 0, 0));
         useEngButton.setText("Очистить русский язык");
         useEngButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         useEngButton.addActionListener(new java.awt.event.ActionListener() {
@@ -389,7 +509,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         moreSettingsMenu.add(useEngButton);
 
-        useRusButton.setForeground(new java.awt.Color(102, 102, 255));
+        useRusButton.setForeground(new java.awt.Color(153, 0, 0));
         useRusButton.setText("Очистить английский язык");
         useRusButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         useRusButton.addActionListener(new java.awt.event.ActionListener() {
@@ -399,7 +519,7 @@ public class JFrame extends javax.swing.JFrame {
         });
         moreSettingsMenu.add(useRusButton);
 
-        deleteSelectionsButton.setForeground(new java.awt.Color(102, 102, 255));
+        deleteSelectionsButton.setForeground(new java.awt.Color(153, 0, 0));
         deleteSelectionsButton.setText("Отменить выбор");
         deleteSelectionsButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         deleteSelectionsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -413,62 +533,13 @@ public class JFrame extends javax.swing.JFrame {
 
         menu.add(settingsMenu);
 
-        mainMenu.setBackground(new java.awt.Color(204, 204, 255));
-        mainMenu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        mainMenu.setForeground(new java.awt.Color(204, 0, 0));
-        mainMenu.setText("Файл");
-        mainMenu.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        mainMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-
-        importButton.setForeground(new java.awt.Color(102, 102, 255));
-        importButton.setText("Загрузить файл");
-        importButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        importButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                importButtonActionPerformed(evt);
-            }
-        });
-        mainMenu.add(importButton);
-
-        analyzeButton.setForeground(new java.awt.Color(102, 102, 255));
-        analyzeButton.setText("Провести анализ");
-        analyzeButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        analyzeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                analyzeButtonActionPerformed(evt);
-            }
-        });
-        mainMenu.add(analyzeButton);
-
-        exportButton.setForeground(new java.awt.Color(102, 102, 255));
-        exportButton.setText("Сохранить отчет");
-        exportButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        exportButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportButtonActionPerformed(evt);
-            }
-        });
-        mainMenu.add(exportButton);
-
-        exitButton.setForeground(new java.awt.Color(102, 102, 255));
-        exitButton.setText("Выход");
-        exitButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
-            }
-        });
-        mainMenu.add(exitButton);
-
-        menu.add(mainMenu);
-
         MainJFrame.setJMenuBar(menu);
 
         javax.swing.GroupLayout MainJFrameLayout = new javax.swing.GroupLayout(MainJFrame.getContentPane());
         MainJFrame.getContentPane().setLayout(MainJFrameLayout);
         MainJFrameLayout.setHorizontalGroup(
             MainJFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
+            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
         );
         MainJFrameLayout.setVerticalGroup(
             MainJFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -682,7 +753,7 @@ public class JFrame extends javax.swing.JFrame {
             }
         });
 
-        welcomeLabel.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Desktop\\Welcome.gif")); // NOI18N
+        welcomeLabel.setIcon(new javax.swing.ImageIcon("C:\\МИФИ\\GitHub\\Exam\\Exam\\src\\main\\resourses\\Welcome.gif")); // NOI18N
 
         welcomeLabel2.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
         welcomeLabel2.setForeground(new java.awt.Color(204, 0, 0));
@@ -771,7 +842,25 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_guideButtonActionPerformed
 
     private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
+        fileWorker = new FileWorker();
 
+        JFileChooser filechooser = new JFileChooser();
+        filechooser.setDialogTitle("Выбор файлов");
+        filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        int showDialog = filechooser.showDialog(null, "Выбрать");
+        if (showDialog == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = filechooser.getSelectedFile();
+            String extension = getFileExtension(selectedFile.toString());
+            if (extension.equals("txt")) {
+                text = (ArrayList<String>) fileWorker.importFile(selectedFile.toString());
+                uploadFileMessage.setVisible(true);
+                uploadFileMessage.setBounds(300, 300, 230, 150);
+            } else {
+                JOptionPane.showMessageDialog(null, "Неверное расширение файла! Выберите файл txt", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (showDialog == JFileChooser.CANCEL_OPTION) {
+            filechooser.setVisible(false);
+        }
     }//GEN-LAST:event_importButtonActionPerformed
 
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
@@ -787,9 +876,8 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private void useRuStopWordsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useRuStopWordsButtonActionPerformed
-        if(useRuStopWordsButton.getState() && ru_stop_words == null)
-        {
-            JOptionPane.showMessageDialog (null, "Вы не выбрали файл со стоп-словами!", "Oшибка", JOptionPane.ERROR_MESSAGE);
+        if (useRuStopWordsButton.getState() && ru_stop_words == null) {
+            JOptionPane.showMessageDialog(null, "Вы не выбрали файл со стоп-словами!", "Oшибка", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_useRuStopWordsButtonActionPerformed
 
@@ -799,9 +887,8 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_editRuStopWordsButtonActionPerformed
 
     private void useEngStopWordsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useEngStopWordsButtonActionPerformed
-        if(useEngStopWordsButton.getState() && eng_stop_words == null)
-        {
-            JOptionPane.showMessageDialog (null, "Вы не выбрали файл со стоп-словами!", "Oшибка", JOptionPane.ERROR_MESSAGE);
+        if (useEngStopWordsButton.getState() && eng_stop_words == null) {
+            JOptionPane.showMessageDialog(null, "Вы не выбрали файл со стоп-словами!", "Oшибка", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_useEngStopWordsButtonActionPerformed
 
@@ -834,6 +921,25 @@ public class JFrame extends javax.swing.JFrame {
         uploadStopWordsMessage.dispose();
     }//GEN-LAST:event_okUploadStopWordsButtonActionPerformed
 
+    private void singleRegisterCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_singleRegisterCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_singleRegisterCBActionPerformed
+
+    private void importStopWordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importStopWordsActionPerformed
+        ru_stop_words = new ArrayList<>();
+        eng_stop_words = new ArrayList<>();
+        textWorker.importStopWords(ru_stop_words, eng_stop_words, ruStopWordsList, engStopWordsList, uploadStopWordsMessage, stopwordsMessageLabel);
+    }//GEN-LAST:event_importStopWordsActionPerformed
+
+    private void allCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_allCBActionPerformed
+
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -841,6 +947,7 @@ public class JFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable FreqTable;
     private javax.swing.JFrame MainJFrame;
+    private javax.swing.JCheckBox allCB;
     private javax.swing.JMenuItem analyzeButton;
     private javax.swing.JMenuItem deleteSelectionsButton;
     private javax.swing.JMenuItem editEngStopWordsButton;
@@ -866,7 +973,8 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JLabel guideLabel9;
     private javax.swing.JPanel guidePanel;
     private javax.swing.JMenuItem importButton;
-    private javax.swing.JMenu mainMenu;
+    private javax.swing.JMenuItem importStopWords;
+    private javax.swing.JMenu loadStopWord;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menu;
     private javax.swing.JMenu moreSettingsMenu;
@@ -876,6 +984,7 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JButton okUploadFileButton;
     private javax.swing.JButton okUploadStopWordsButton;
     private javax.swing.JLabel popularWordField;
+    private javax.swing.JCheckBox removeNumbersCB;
     private javax.swing.JFrame ruStopWordsFrame;
     private javax.swing.JList<String> ruStopWordsList;
     private javax.swing.JScrollPane ruStopWordsScrollPanel;
@@ -884,6 +993,7 @@ public class JFrame extends javax.swing.JFrame {
     private javax.swing.JDialog saveReportMessage;
     private javax.swing.JScrollPane scrollPanel;
     private javax.swing.JMenu settingsMenu;
+    private javax.swing.JCheckBox singleRegisterCB;
     private javax.swing.JButton startButton;
     private javax.swing.JPanel startFrame;
     private javax.swing.JLabel stopwordsMessageLabel;

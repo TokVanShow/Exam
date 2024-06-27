@@ -29,5 +29,8 @@ public class FileWorker {
         }
         return text;
     }
+    public void ExportResults(){
+        
+    }
 }
 
