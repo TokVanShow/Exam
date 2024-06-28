@@ -17,10 +17,20 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+/**
+ * Класс предоставляет методы для импорта текстовых данных из файла и экспорта
+ * результатов анализа в файл Excel.
+ */
 public class FileWorker {
 
     private List<String> text;
 
+    /**
+     * Импортирует текст из указанного файла.
+     *
+     * @param path Путь к файлу.
+     * @return Список строк, содержащих текст из файла.
+     */
     public List<String> importFile(String path) {
         text = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "Cp1251"))) {
@@ -38,42 +48,46 @@ public class FileWorker {
         }
         return text;
     }
-    public void ExportResults(String path, DefaultTableModel freq_table, JLabel NumberWordsField, JLabel NumberDelWordsField, JLabel PopularWordField, JLabel UnpopularWordField)
-    {
-        try{
-        XSSFWorkbook workbook = new XSSFWorkbook();
+
+    /**
+     * Экспортирует результаты анализа в файл Excel.
+     *
+     * @param path Путь к файлу для сохранения.
+     * @param freq_table Модель таблицы с частотами слов.
+     * @param NumberWordsField Метка для отображения количества слов.
+     * @param NumberDelWordsField Метка для отображения количества удаленных слов.
+     * @param PopularWordField Метка для отображения самого популярного слова.
+     * @param UnpopularWordField Метка для отображения самого редкого слова.
+     */
+public void ExportResults(String path, DefaultTableModel freq_table, JLabel NumberWordsField, JLabel NumberDelWordsField, JLabel PopularWordField, JLabel UnpopularWordField) {
+    try (XSSFWorkbook workbook = new XSSFWorkbook()) {
         XSSFSheet sheet = workbook.createSheet("Report");
         AtomicInteger rowIndex = new AtomicInteger(0);
         Row headerRow = sheet.createRow(rowIndex.getAndIncrement());
-        for(int i=0; i<freq_table.getColumnCount(); i++)
-        {
+        for (int i = 0; i < freq_table.getColumnCount(); i++) {
             headerRow.createCell(i).setCellValue(freq_table.getColumnName(i));
         }
-        for(int i=0; i<freq_table.getRowCount(); i++)
-        {
+        for (int i = 0; i < freq_table.getRowCount(); i++) {
             XSSFRow row = sheet.createRow(rowIndex.getAndIncrement());
-            for(int j=0; j<freq_table.getColumnCount(); j++)
-            {
+            for (int j = 0; j < freq_table.getColumnCount(); j++) {
                 XSSFCell cell = row.createCell(j);
                 cell.setCellValue(freq_table.getValueAt(i, j).toString());
             }
         }
         JLabel[] mass = new JLabel[]{NumberWordsField, NumberDelWordsField, PopularWordField, UnpopularWordField};
-        for(int i=0; i<4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             XSSFRow row1 = sheet.createRow(rowIndex.getAndIncrement());
             XSSFCell cell1 = row1.createCell(0);
             cell1.setCellValue(mass[i].getText());
         }
 
         String fileLocation = path + "/Report.xlsx";
-        FileOutputStream outputStream = new FileOutputStream(fileLocation);
-        workbook.write(outputStream);
-        workbook.close();
-        } catch(IOException e)
-        {
-            JOptionPane.showMessageDialog (null, "Ошибка в сохранении отчета!", "Oшибка", JOptionPane.ERROR_MESSAGE);            
+        try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
+            workbook.write(outputStream);
         }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Ошибка в сохранении отчета!", "Oшибка", JOptionPane.ERROR_MESSAGE);
     }
 }
 
+}

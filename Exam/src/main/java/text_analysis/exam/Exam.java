@@ -1,8 +1,15 @@
-
 package text_analysis.exam;
 
+/**
+ * Главный класс программы, который запускает графический интерфейс.
+ */
 public class Exam {
 
+    /**
+     * Главный метод, который устанавливает вид и запускает графический интерфейс.
+     *
+     * @param args Аргументы командной строки.
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -27,7 +34,7 @@ public class Exam {
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Создание и отображение формы */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new JFrame().setVisible(true);
