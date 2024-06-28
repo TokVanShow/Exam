@@ -41,7 +41,21 @@ public class JFrame extends javax.swing.JFrame {
                 System.exit(0);
             }
         });
+        String gifPath = System.getProperty("user.dir") + "/resources/Welcome.gif";
+        File gifFile = new File(gifPath);
+
+        if (gifFile.exists() && !gifFile.isDirectory()) {
+            ImageIcon gif = new ImageIcon(gifPath);
+            welcomeLabel.setIcon(gif);
+        } else {
+            System.out.println("Файл не найден: " + gifPath);
+        }
+
+        // Устанавливаем размер окна в соответствии с содержимым
+        loadingFrame.pack();
+        loadingFrame.setLocationRelativeTo(null); // Центрируем окно на экране
     }
+    
     ArrayList<String> text;
     ArrayList<String> changed_text;
     ArrayList<String> ru_stop_words;
@@ -51,6 +65,8 @@ public class JFrame extends javax.swing.JFrame {
     FileWorker fileWorker;
     TextWorker textWorker;
     AnalysisWorker analyst;
+    String gifPath = System.getProperty("user.dir") + "/resources/Welcome.gif";
+        File gifFile = new File(gifPath);
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -199,25 +215,22 @@ public class JFrame extends javax.swing.JFrame {
                             .addComponent(guideLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
                             .addComponent(guideLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(guidePanelLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(guideLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(guideLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(guideLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+                            .addComponent(guideLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(guidePanelLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
                         .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(guideLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(guideLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(guidePanelLayout.createSequentialGroup()
-                                .addGap(30, 30, 30)
-                                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(guideLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(guideLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(guideLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
-                                    .addComponent(guideLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(guidePanelLayout.createSequentialGroup()
-                                .addGap(15, 15, 15)
-                                .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(guidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(guideLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(guideLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE))
-                                    .addGroup(guidePanelLayout.createSequentialGroup()
-                                        .addComponent(guideLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(guideLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 546, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(exitFromGuideButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
             .addGroup(guidePanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
@@ -306,9 +319,9 @@ public class JFrame extends javax.swing.JFrame {
 
         numberWordsField.setForeground(new java.awt.Color(204, 0, 0));
 
-        guideButton.setBackground(new java.awt.Color(204, 204, 204));
-        guideButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        guideButton.setIcon(new javax.swing.ImageIcon("C:\\МИФИ\\GitHub\\Exam\\Exam\\src\\main\\resourses\\help.png")); // NOI18N
+        guideButton.setBackground(new java.awt.Color(153, 0, 0));
+        guideButton.setFont(new java.awt.Font("Algerian", 1, 18)); // NOI18N
+        guideButton.setText("?");
         guideButton.setBorder(null);
         guideButton.setFocusPainted(false);
         guideButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -397,7 +410,6 @@ public class JFrame extends javax.swing.JFrame {
         menu.setPreferredSize(new java.awt.Dimension(95, 35));
 
         loadStopWord.setBackground(new java.awt.Color(0, 0, 0));
-        loadStopWord.setBorder(null);
         loadStopWord.setForeground(new java.awt.Color(204, 0, 0));
         loadStopWord.setText("        File        ");
         loadStopWord.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -752,7 +764,7 @@ public class JFrame extends javax.swing.JFrame {
 
         loadingLabel1.setFont(new java.awt.Font("Algerian", 1, 15)); // NOI18N
         loadingLabel1.setForeground(new java.awt.Color(204, 0, 0));
-        loadingLabel1.setText("The text is being analyzed");
+        loadingLabel1.setText("The text is being analyzed...");
 
         loadingLabel2.setFont(new java.awt.Font("Algerian", 1, 14)); // NOI18N
         loadingLabel2.setForeground(new java.awt.Color(204, 0, 0));
@@ -769,23 +781,24 @@ public class JFrame extends javax.swing.JFrame {
                 .addComponent(loadingLabel2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(106, 106, 106)
+                .addGap(163, 163, 163)
                 .addComponent(loadingLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(81, 81, 81)
-                .addComponent(gifLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(gifLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 554, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(loadingLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(12, 12, 12)
                 .addComponent(loadingLabel2)
-                .addGap(24, 24, 24)
-                .addComponent(gifLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(gifLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout loadingFrameLayout = new javax.swing.GroupLayout(loadingFrame.getContentPane());
@@ -817,8 +830,6 @@ public class JFrame extends javax.swing.JFrame {
             }
         });
 
-        welcomeLabel.setIcon(new javax.swing.ImageIcon("C:\\МИФИ\\GitHub\\Exam\\Exam\\src\\main\\resourses\\Welcome.gif")); // NOI18N
-
         welcomeLabel2.setFont(new java.awt.Font("Algerian", 0, 14)); // NOI18N
         welcomeLabel2.setForeground(new java.awt.Color(204, 0, 0));
         welcomeLabel2.setText("This program will allow you to analyze text ");
@@ -836,40 +847,41 @@ public class JFrame extends javax.swing.JFrame {
         startFrameLayout.setHorizontalGroup(
             startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(startFrameLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(startFrameLayout.createSequentialGroup()
-                        .addComponent(welcomeLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(201, 201, 201))
-                    .addGroup(startFrameLayout.createSequentialGroup()
-                        .addGroup(startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(welcomeLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(welcomeLabel))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(startFrameLayout.createSequentialGroup()
                 .addGroup(startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(startFrameLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(welcomeLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(startFrameLayout.createSequentialGroup()
-                        .addGap(202, 202, 202)
+                        .addContainerGap()
+                        .addComponent(welcomeLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(startFrameLayout.createSequentialGroup()
+                        .addGap(204, 204, 204)
                         .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(startFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(startFrameLayout.createSequentialGroup()
+                        .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(startFrameLayout.createSequentialGroup()
+                        .addComponent(welcomeLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(201, 201, 201))))
         );
         startFrameLayout.setVerticalGroup(
             startFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(startFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(welcomeLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(welcomeLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(welcomeLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(welcomeLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -882,7 +894,7 @@ public class JFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(startFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(startFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -949,7 +961,22 @@ public class JFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_analyzeButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
+        fileWorker = new FileWorker();
+        JFileChooser filechooser = new JFileChooser();
+        filechooser.setDialogTitle("Выбор папки");
+        filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        filechooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        int showDialog = filechooser.showDialog(this, "Выбрать");
+        if (showDialog == JFileChooser.APPROVE_OPTION) {
+            String selectedFile = filechooser.getSelectedFile().toString();
+            freq_table = (DefaultTableModel) FreqTable.getModel();
+            fileWorker.ExportResults(selectedFile, freq_table, numberWordsField, numberDelWordsField, popularWordField, unpopularWordField);
 
+            saveReportMessage.setVisible(true);
+            saveReportMessage.setBounds(300, 300, 200, 150);
+        } else if (showDialog == JFileChooser.CANCEL_OPTION) {
+            filechooser.setVisible(false);
+        }
     }//GEN-LAST:event_exportButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
@@ -1023,7 +1050,7 @@ public class JFrame extends javax.swing.JFrame {
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
     }
 
-    Timer timer = new Timer(3000, new ActionListener() {
+    Timer timer = new Timer(5000, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent evt) {
             loadingFrame.dispose();
@@ -1032,9 +1059,20 @@ public class JFrame extends javax.swing.JFrame {
 
     public void loadingProcess() {
         loadingFrame.setVisible(true);
-        loadingFrame.setBounds(300, 300, 350, 330);
-        ImageIcon gif = new ImageIcon(System.getProperty("user.dir") + "/resources/loading.gif");
-        gifLabel.setIcon(gif);
+        // Устанавливаем путь к файлу гифки
+        String gifPath = System.getProperty("user.dir") + "/resources/Loading.gif";
+        File gifFile = new File(gifPath);
+
+        if (gifFile.exists() && !gifFile.isDirectory()) {
+            ImageIcon gif = new ImageIcon(gifPath);
+            gifLabel.setIcon(gif);
+        } else {
+            System.out.println("Файл не найден: " + gifPath);
+        }
+
+        // Устанавливаем размер окна в соответствии с содержимым
+        loadingFrame.pack();
+        loadingFrame.setLocationRelativeTo(null); // Центрируем окно на экране
     }
 
     /**
