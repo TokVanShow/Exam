@@ -53,15 +53,15 @@ public class TextWorker {
         if (useRusButton.isSelected()) {
             text = deleteNotRus(text);
         }
-        if (useEngButton.isSelected()) {
+        /*if (useEngButton.isSelected()) {
             text = deleteNotEng(text);
-        }
+        }*/
         if (useRuStopWordsButton.isSelected()) {
             useStopWords(text, ruStopWords, ruStopWordsList);
         }
-        if (useEngStopWordsButton.isSelected()) {
+        /*if (useEngStopWordsButton.isSelected()) {
             useStopWords(text, engStopWords, engStopWordsList);
-        }
+        }*/
 
         return text;
     }
@@ -120,7 +120,7 @@ public class TextWorker {
      * @param text Текст для обработки.
      * @return Текст, содержащий только английские слова.
      */
-    public ArrayList<String> deleteNotEng(ArrayList<String> text) {
+    /*public ArrayList<String> deleteNotEng(ArrayList<String> text) {
         ArrayList<String> newText = new ArrayList<>();
         for (String word : text) {
             String cleanedWord = word.replaceAll("[^a-z]", "");
@@ -129,7 +129,7 @@ public class TextWorker {
             }
         }
         return newText;
-    }
+    }*/
 
     /**
      * Применяет стоп-слова к тексту.
@@ -189,7 +189,7 @@ public class TextWorker {
             }
 
             String firstLine = lines.get(0).trim().toUpperCase();
-            if (!firstLine.equals("RU") && !firstLine.equals("ENG")) {
+            if (!firstLine.equals("RU") /*&& !firstLine.equals("ENG")*/) {
                 JOptionPane.showMessageDialog(null, "Неверный формат файла! Первая строка должна быть 'RU' или 'ENG'", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -197,9 +197,9 @@ public class TextWorker {
             List<String> stopWords = lines.subList(1, lines.size());
             if (firstLine.equals("RU")) {
                 updateStopWords(ruStopWords, stopWords, ruStopWordsList, stopwordsMessageLabel, "Русский список стоп-слов загружен!");
-            } else {
+            } /*else {
                 updateStopWords(engStopWords, stopWords, engStopWordsList, stopwordsMessageLabel, "Английский список стоп-слов загружен!");
-            }
+            }*/
 
             showUploadStopWordsMessage(uploadStopWordsMessage);
         } catch (IOException e) {

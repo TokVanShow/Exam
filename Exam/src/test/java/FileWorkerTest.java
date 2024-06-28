@@ -32,7 +32,7 @@ public class FileWorkerTest {
         assertEquals("is", text.get(3));
         assertEquals("a", text.get(4));
         assertEquals("test", text.get(5));
-        assertEquals("file.", text.get(6)); // обновлено до ожидаемого последнего слова
+        assertEquals("file.", text.get(6)); 
     }
 
     /**
